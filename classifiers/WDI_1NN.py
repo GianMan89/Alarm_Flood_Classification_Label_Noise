@@ -42,13 +42,24 @@ class WDI_1NN:
                     y_assign_i.append(0)
             # get class dissimilarities
             y_proba.append(y_assign_i)
-        # convert dissimilarities to probabilities via softmax over negative distances
-        y_proba = np.array(y_proba, dtype=float)
-        logits = -y_proba
-        logits = logits - np.max(logits, axis=1, keepdims=True)  # numerical stability
-        exp_logits = np.exp(logits)
-        y_proba = exp_logits / np.sum(exp_logits, axis=1, keepdims=True)
-        return np.array(y_proba)
+        # convert dissimilarities to distances and use k-NN classification
+        y_proba_array = np.array(y_proba, dtype=float)
+        
+        # For each sample, find k nearest neighbor classes based on distances
+        result_proba = []
+        for i in range(y_proba_array.shape[0]):
+            distances = y_proba_array[i]
+            # Get indices of k nearest neighbors (smallest distances)
+            k_nearest_indices = np.argsort(distances)[:self.n_neighbors]
+            
+            # Create probability distribution based on k-NN vote
+            proba_sample = np.zeros(len(self.classes))
+            for idx in k_nearest_indices:
+                proba_sample[idx] += 1.0 / self.n_neighbors
+            
+            result_proba.append(proba_sample)
+ 
+        return np.array(result_proba)
 
     def calc_active_alarms(self, X):
         X_active = []

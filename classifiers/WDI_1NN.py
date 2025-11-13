@@ -60,6 +60,11 @@ class WDI_1NN:
             result_proba.append(proba_sample)
  
         return np.array(result_proba)
+    
+    def predict(self, X):
+        y_proba = self.predict_proba(X)
+        y_pred = [self.classes[np.argmax(y_proba[i])] for i in range(y_proba.shape[0])]
+        return np.array(y_pred)
 
     def calc_active_alarms(self, X):
         X_active = []

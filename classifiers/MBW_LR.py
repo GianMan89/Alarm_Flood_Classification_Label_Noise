@@ -80,6 +80,11 @@ class MBW_LR:
         # get the posterior class probabilities
         y_scores = self.clf.predict_proba(mbow_vectors_test)
         return y_scores
+    
+    def predict(self, X):
+        y_proba = self.predict_proba(X)
+        y_pred = [self.clf.classes_[np.argmax(y_proba[i])] for i in range(y_proba.shape[0])]
+        return np.array(y_pred)
 
     def get_alarm_count(self, X):
         X_count = []

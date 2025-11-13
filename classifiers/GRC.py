@@ -28,3 +28,8 @@ class GRC:
                 ]
             )
         return np.array(y_predict)
+    
+    def predict(self, X):
+        y_proba = self.predict_proba(X)
+        y_pred = [np.argmax(y_proba[i]) for i in range(y_proba.shape[0])]
+        return np.array(y_pred)

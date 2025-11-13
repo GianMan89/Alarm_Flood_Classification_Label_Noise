@@ -54,3 +54,8 @@ class CASIM:
         # get the posterior class probabilities
         y_scores = self.clf._predict_proba(X)
         return np.array(y_scores)
+
+    def predict(self, X):
+        y_proba = self.predict_proba(X)
+        y_pred = [self.clf.classes_[np.argmax(y_proba[i])] for i in range(y_proba.shape[0])]
+        return np.array(y_pred)

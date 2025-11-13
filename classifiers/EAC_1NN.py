@@ -31,6 +31,11 @@ class EAC_1NN:
         X_converted = utils.convert_alarms(X)
         X_test_features = self.get_feature_vectors(X_converted)
         return np.array([self.get_nearest_neighbor(x) for x in X_test_features])
+    
+    def predict(self, X):
+        y_proba = self.predict_proba(X)
+        y_pred = [self.y_train[np.argmin(y_proba[i])] for i in range(y_proba.shape[0])]
+        return np.array(y_pred)
 
     def calculate_normalized_distances(self, reference_vector, vector_set):
         distances = np.linalg.norm(vector_set - reference_vector, axis=1)

@@ -3,13 +3,14 @@ import pandas as pd
 
 
 class WDI_1NN:
-    def __init__(self, params={"template_threshold": 0.5}):
+    def __init__(self, params={"template_threshold": 0.5, "n_neighbors": 1}):
         self.classes = None
         self.templates = None
         self.weights_novelty = None
         self.weights_assignment = None
         self.X_active = None
         self.template_threshold = params["template_threshold"]
+        self.n_neighbors = params["n_neighbors"]
 
     @property
     def __name__(self):

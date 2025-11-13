@@ -14,6 +14,7 @@ class EAC_1NN:
         )
         self.X_train_features = None
         self.y_train = None
+        self.classes = None
 
     @property
     def __name__(self):
@@ -22,6 +23,7 @@ class EAC_1NN:
     def fit(self, X, y):
         self.n_alm_vars = X.shape[1]
         self.y_train = y
+        self.classes = np.unique(y)
         # Cache converted alarms
         X_converted = utils.convert_alarms(X)
         self.X_train_features = self.get_feature_vectors(X_converted)
@@ -34,7 +36,7 @@ class EAC_1NN:
     
     def predict(self, X):
         y_proba = self.predict_proba(X)
-        y_pred = [self.y_train[np.argmin(y_proba[i])] for i in range(y_proba.shape[0])]
+        y_pred = [self.classes[np.argmin(y_proba[i])] for i in range(y_proba.shape[0])]
         return np.array(y_pred)
 
     def calculate_normalized_distances(self, reference_vector, vector_set):

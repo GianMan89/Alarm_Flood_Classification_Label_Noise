@@ -2,23 +2,24 @@ import math
 import numpy as np
 import classifiers.utils as utils
 
-class EAC_1NN:
+class EAC_KNN:
     """
-    Exponentially Attenuation Coefficient 1-Nearest Neighbor classifier
+    Exponentially Attenuation Coefficient K-Nearest Neighbor classifier
     """
 
-    def __init__(self, params={"attenuation_coefficient_per_min": 0.0667}):
+    def __init__(self, params={"attenuation_coefficient_per_min": 0.0667, "n_neighbors": 3}):
         # convert attenuation coefficient from min to hour
         self.attenuation_coefficient = (
             params["attenuation_coefficient_per_min"] * 60
         )
+        self.k = params.get("n_neighbors", 3)
         self.X_train_features = None
         self.y_train = None
         self.classes = None
 
     @property
     def __name__(self):
-        return "EAC_1NN"
+        return "EAC_KNN"
 
     def fit(self, X, y):
         self.n_alm_vars = X.shape[1]
@@ -32,29 +33,34 @@ class EAC_1NN:
         # Cache converted alarms
         X_converted = utils.convert_alarms(X)
         X_test_features = self.get_feature_vectors(X_converted)
-        return np.array([self.get_nearest_neighbor(x) for x in X_test_features])
+        return np.array([self.get_k_nearest_neighbors(x) for x in X_test_features])
     
     def predict(self, X):
         y_proba = self.predict_proba(X)
-        y_pred = [self.classes[np.argmin(y_proba[i])] for i in range(y_proba.shape[0])]
+        y_pred = [self.classes[np.argmax(y_proba[i])] for i in range(y_proba.shape[0])]
         return np.array(y_pred)
 
-    def calculate_normalized_distances(self, reference_vector, vector_set):
+    def calculate_distances(self, reference_vector, vector_set):
         distances = np.linalg.norm(vector_set - reference_vector, axis=1)
-        # Normalize by the maximum distance across the set
-        max_distance = np.max(distances)
-        if max_distance == 0:
-            return np.zeros_like(distances)
-        return distances / max_distance
+        return distances
 
-    def get_nearest_neighbor(self, x):
-        # Vectorized version to compute min distance per class
-        min_distances = []
-        for class_label in np.unique(self.y_train):
-            class_samples = self.X_train_features[self.y_train == class_label]
-            normalized_distances = self.calculate_normalized_distances(x, class_samples)
-            min_distances.append(np.min(normalized_distances))
-        return min_distances
+    def get_k_nearest_neighbors(self, x):
+        # Calculate distances to all training samples
+        distances = self.calculate_distances(x, self.X_train_features)
+        
+        # Get indices of k nearest neighbors
+        k_nearest_indices = np.argsort(distances)[:self.k]
+        
+        # Get labels of k nearest neighbors
+        k_nearest_labels = self.y_train[k_nearest_indices]
+        
+        # Calculate class probabilities based on k nearest neighbors
+        class_probs = []
+        for class_label in self.classes:
+            count = np.sum(k_nearest_labels == class_label)
+            class_probs.append(count / self.k)
+        
+        return class_probs
 
     def get_feature_vectors(self, X):
         X_alarms = self.get_alarm_flood_vector(X)

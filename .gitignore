@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+# pptx files in results
+results/*.pptx
+
 # Distribution / packaging
 .Python
 build/

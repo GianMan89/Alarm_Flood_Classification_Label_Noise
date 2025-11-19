@@ -7,7 +7,7 @@ __pycache__/
 *.so
 
 # pptx files in results
-results/*.pptx
+*.pptx
 
 # Distribution / packaging
 .Python

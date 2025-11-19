@@ -1,10 +1,11 @@
-AFC-LaRA: Autoencoder-Based Robustness Analysis for Alarm Flood Classification under Label Noise
+## AFC-LaRA: Autoencoder-Based Robustness Analysis for Alarm Flood Classification under Label Noise
 
 This repository contains the code, data, and results accompanying the paper:
 “Autoencoder-Based Robustness Analysis for Alarm Flood Classification under Label Noise”.
 The work introduces **AFC–LaRA**, a classifier-agnostic framework that uses convolutional
 autoencoders to build latent-space label perturbations and evaluate the robustness of
 Alarm Flood Classification (AFC) methods to structured label noise.
+
 --------------------------------------------------------------------
 Repository Structure
 --------------------------------------------------------------------
